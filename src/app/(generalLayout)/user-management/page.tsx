@@ -1,11 +1,11 @@
 import AContainer from "@/components/AContainer";
-import RegistrationTable from "../sections/dashboard/RegistrationTable";
+import UserTable from "../../../sections/dashboard/UserTable";
 
 const ManageRegistration = () => {
   return (
     <main>
       <AContainer>
-        <RegistrationTable limit={10} pagination />
+        <UserTable limit={10} pagination />
       </AContainer>
     </main>
   );

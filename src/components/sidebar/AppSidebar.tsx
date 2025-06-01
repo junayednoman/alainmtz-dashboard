@@ -21,7 +21,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <Link
-          href={"/"}
+          href={"/dashboard"}
           className="flex items-center justify-between gap-6 p-2"
         >
           <Image src={logo} alt="logo" width={28} height={28} />

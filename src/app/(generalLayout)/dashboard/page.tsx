@@ -1,8 +1,8 @@
 import AContainer from "@/components/AContainer";
-import TopStats from "./sections/dashboard/TopStats";
-import TopPerformers from "./sections/dashboard/TopPerformers";
-import Banners from "./sections/dashboard/Banners";
-import RegistrationTable from "./sections/dashboard/RegistrationTable";
+import TopStats from "../sections/dashboard/TopStats";
+import TopPerformers from "../sections/dashboard/TopPerformers";
+import Banners from "../sections/dashboard/Banners";
+import UserTable from "../sections/dashboard/UserTable";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
             <Banners />
           </section>
           <section className="col-span-2 min-h-[300px] bg-card rounded-xl p-5">
-            <RegistrationTable />
+            <UserTable />
           </section>
         </div>
       </AContainer>

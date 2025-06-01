@@ -161,3 +161,7 @@ div[data-slot="sidebar-wrapper"] header {
 button {
   cursor: pointer;
 }
+
+div[data-input-otp-container="true"] {
+  justify-content: center !important;
+}

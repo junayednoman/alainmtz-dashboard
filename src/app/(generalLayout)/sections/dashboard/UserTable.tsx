@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { APagination } from "@/components/ui/APagination";
 
-const RegistrationTable = ({
+const UserTable = ({
   pagination = false,
   limit = 10,
 }: {
@@ -54,7 +54,7 @@ const RegistrationTable = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-primary-foreground">
-          Manage Registrations
+          User Management
         </h1>
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -180,4 +180,4 @@ const RegistrationTable = ({
   );
 };
 
-export default RegistrationTable;
+export default UserTable;

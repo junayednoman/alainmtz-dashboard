@@ -1,10 +1,4 @@
-import {
-  Bell,
-  ClipboardList,
-  Settings,
-  UserRoundCog,
-  Users,
-} from "lucide-react";
+import { Bell, Settings, UserRoundCog, Users } from "lucide-react";
 
 type TNavMain = {
   title: string;
@@ -14,19 +8,14 @@ type TNavMain = {
 
 export const navMain: TNavMain = [
   {
-    title: "Manage Registrations",
-    url: "/manage-registrations",
-    icon: <ClipboardList />,
+    title: "User Management",
+    url: "/user-management",
+    icon: <UserRoundCog />,
   },
   {
     title: "Leaderboard Section",
     url: "/leaderboard-section",
     icon: <Users />,
-  },
-  {
-    title: "User Management",
-    url: "/user-management",
-    icon: <UserRoundCog />,
   },
   {
     title: "Notifications",
