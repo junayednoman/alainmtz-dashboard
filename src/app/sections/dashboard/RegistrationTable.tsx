@@ -8,11 +8,20 @@ import panda from "@/assets/panda.png";
 import { registrations } from "@/data/registrations.data";
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
+import { APagination } from "@/components/ui/APagination";
 
-const RegistrationTable = () => {
+const RegistrationTable = ({
+  pagination = false,
+  limit = 10,
+}: {
+  pagination?: boolean;
+  limit?: number;
+}) => {
   const [searchText, setSearchText] = useState<string>("");
   const debouncedSearchText = useDebounce(searchText, 500);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // Filter registrations based on debounced search text
   const filteredRegistrations = registrations.filter(
     (registration) =>
       registration.name
@@ -23,8 +32,17 @@ const RegistrationTable = () => {
         .includes(debouncedSearchText.toLowerCase())
   );
 
+  // Calculate paginated registrations based on limit
+  const totalItems = filteredRegistrations.length;
+  const startIndex = (currentPage - 1) * limit;
+  const paginatedRegistrations = filteredRegistrations.slice(
+    startIndex,
+    startIndex + limit
+  );
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
+    setCurrentPage(1); // Reset to first page on new search
   };
 
   useEffect(() => {
@@ -72,8 +90,8 @@ const RegistrationTable = () => {
 
         {/* Data Rows */}
         <div className="divide-y divide-border">
-          {filteredRegistrations.length > 0 ? (
-            filteredRegistrations.map((registration) => (
+          {paginatedRegistrations.length > 0 ? (
+            paginatedRegistrations.map((registration) => (
               <div
                 key={registration.id}
                 className="px-6 py-4 hover:bg-card/50 transition-colors"
@@ -144,6 +162,19 @@ const RegistrationTable = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {pagination && totalItems > limit && (
+          <div className="p-4">
+            <APagination
+              totalItems={totalItems}
+              itemsPerPage={limit}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              maxVisiblePages={5}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

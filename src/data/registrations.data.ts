@@ -50,9 +50,16 @@ export const registrations = [
   },
   {
     id: 8,
-    name: "Saga",
+    name: "Mason Brooks",
     email: "@gmail.com",
     avatar: "/placeholder.svg?height=40&width=40",
     registrationDate: "2024-01-08",
+  },
+  {
+    id: 9,
+    name: "Mason Brooks",
+    email: "@gmail.com",
+    avatar: "/placeholder.svg?height=40&width=40",
+    registrationDate: "2024-01-07",
   },
 ];

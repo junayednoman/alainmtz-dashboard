@@ -12,25 +12,30 @@ import { useEffect } from "react";
 
 interface PaginationProps {
   initialPage?: number; // Initial page number (default: 1)
-  totalPages: number; // Total number of pages
+  totalItems: number; // Total number of items
+  itemsPerPage: number; // Number of items per page
   maxVisiblePages?: number; // Maximum number of page numbers to show (default: 5)
   onPageChange?: (page: number) => void; // Callback when page changes
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
+  currentPage: number; // Current page from parent state
+  setCurrentPage: (page: number) => void; // Function to update current page
 }
 
 export function APagination({
   initialPage = 1,
-  totalPages,
+  totalItems,
+  itemsPerPage,
   maxVisiblePages = 5,
   onPageChange,
   currentPage,
   setCurrentPage,
 }: PaginationProps) {
+  // Calculate totalPages based on totalItems and itemsPerPage
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
   // Sync currentPage with initialPage if it changes (e.g., from parent props)
   useEffect(() => {
     setCurrentPage(initialPage);
-  }, [initialPage]);
+  }, [initialPage, setCurrentPage]);
 
   // Handle page change
   const handlePageChange = (page: number) => {
