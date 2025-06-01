@@ -21,15 +21,14 @@ import Link from "next/link";
 
 const Providers = ({ children }: { children: ReactNode }) => {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="flex">
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 sticky top-0 right-0 z-50 bg-background">
           <div className="flex items-center justify-between gap-2 px-4 w-full">
             <SidebarTrigger className="-ml-1" />
             <DropdownMenu>
               <DropdownMenuTrigger>
-                {" "}
                 <button className="">
                   <Image src={avatarImg} alt="logo" width={40} height={40} />
                 </button>

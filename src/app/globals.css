@@ -56,6 +56,11 @@
   --shadow-2xl: var(--shadow-2xl);
 }
 
+body::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
 :root {
   --background: #292929;
   --foreground: #a4a4a4;
