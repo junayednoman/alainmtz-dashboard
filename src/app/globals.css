@@ -165,3 +165,7 @@ button {
 div[data-input-otp-container="true"] {
   justify-content: center !important;
 }
+
+.jodit-container {
+  min-height: 100% !important;
+}
