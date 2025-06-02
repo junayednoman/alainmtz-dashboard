@@ -1,3 +1,5 @@
+import { CreateBannerModal } from "@/components/modal/CreateBannerModal";
+import { EditBannerModal } from "@/components/modal/EditBannerModal";
 import {
   Carousel,
   CarouselContent,
@@ -15,12 +17,16 @@ const Banners = () => {
           <div>
             <h4 className="text-lg font-bold">Banners</h4>
           </div>
-          <div className="bg-background rounded-full p-2 cursor-pointer">
-            <Plus size={15} />
-          </div>
-          <div className="bg-background rounded-full p-2 cursor-pointer">
-            <Pencil size={15} />
-          </div>
+          <CreateBannerModal>
+            <button className="bg-background rounded-full p-2 cursor-pointer">
+              <Plus size={15} />
+            </button>
+          </CreateBannerModal>
+          <EditBannerModal>
+            <button className="bg-background rounded-full p-2 cursor-pointer">
+              <Pencil size={15} />
+            </button>
+          </EditBannerModal>
         </div>
       </div>
       <div className="mt-6 w-full">

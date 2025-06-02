@@ -72,7 +72,7 @@ body::selection {
   --primary-foreground: #ffffff;
   --secondary: #f5f5f5;
   --secondary-foreground: #a4a4a4;
-  --muted: #f7f7f7;
+  --muted: #5272ff;
   --muted-foreground: #8e8e8e;
   --accent: #f7f7f7;
   --accent-foreground: #343434;
@@ -120,7 +120,7 @@ body::selection {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-primary-foreground;
   }
 }
 

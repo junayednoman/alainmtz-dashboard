@@ -1,4 +1,5 @@
 "use client";
+
 import { Icon } from "@tabler/icons-react";
 import {
   SidebarGroup,
@@ -9,6 +10,13 @@ import {
 } from "../ui/sidebar";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import { Separator } from "../ui/separator";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useAppDispatch } from "@/redux/hooks/hooks";
+import { useLogoutMutation } from "@/redux/api/authApi";
+import handleMutation from "@/utils/handleMutation";
+import { logOut } from "@/redux/slice/authSlice";
+
 export function NavMain({
   items,
 }: {
@@ -18,17 +26,46 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
+  const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
+  const router = useRouter();
+
+  // Determine if a menu item is active based on the current pathname
+  const isActive = (url: string) => pathname === url;
+
+  console.log("pathname", pathname);
+
+  const onSuccess = () => {
+    dispatch(logOut());
+    router.push(`/auth/login?redirect=${pathname}`);
+  };
+
+  const handleLogout = async () => {
+    await handleMutation({}, logout, "Logging out...", onSuccess);
+  };
+
   return (
     <SidebarGroup className="mainNav">
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
+              asChild // Render the Link as the button content
               tooltip="Quick Create"
-              className="bg-primary text-[15px] py-6 px-4 cursor-pointer text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+              className={`text-[15px] py-6 px-4 cursor-pointer min-w-8 duration-200 ease-linear ${
+                isActive("/dashboard")
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "hover:bg-muted"
+              }`}
             >
-              <LayoutDashboard />
-              <span>Dashboard</span>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 w-full"
+              >
+                <LayoutDashboard />
+                <span>Dashboard</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -36,11 +73,21 @@ export function NavMain({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
-                className="text-[15px] py-6 px-4 cursor-pointer"
+                asChild // Render the Link as the button content
+                className={`text-[15px] py-6 px-4 cursor-pointer ${
+                  isActive(item.url)
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "hover:bg-muted"
+                }`}
                 tooltip={item.title}
               >
-                {item.icon && (item?.icon as any)}
-                <span> {item.title} </span>
+                <Link
+                  href={item.url}
+                  className="flex items-center gap-2 w-full"
+                >
+                  {item.icon && (item?.icon as any)}
+                  <span>{item.title}</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
@@ -49,6 +96,7 @@ export function NavMain({
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
+              onClick={handleLogout}
               tooltip="Logout"
               className="text-[15px] py-6 px-4 cursor-pointer hover:bg-transparent active:bg-transparent"
             >

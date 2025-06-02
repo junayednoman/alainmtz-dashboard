@@ -15,7 +15,7 @@ export default function Home() {
             <Banners />
           </section>
           <section className="col-span-2 min-h-[300px] bg-card rounded-xl p-5">
-            <UserTable limit={8} />
+            <UserTable limit={10} />
           </section>
         </div>
       </AContainer>

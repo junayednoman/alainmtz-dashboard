@@ -16,22 +16,45 @@ import {
 } from "@/components/ui/form";
 import loginSchema from "@/validations/login.validation";
 import Link from "next/link";
+import handleMutation from "@/utils/handleMutation";
+import { useDispatch } from "react-redux";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useLoginMutation } from "@/redux/api/authApi";
+import { setUser } from "@/redux/slice/authSlice";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [login, { isLoading }] = useLoginMutation();
+  const searchParams = useSearchParams();
+
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "alainmtzadmin@gmail.com",
+      password: "admin123",
       rememberPassword: false,
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log("Form submitted:", data);
-    // Handle login logic here
+  const onSuccess = (res: any) => {
+    console.log("Login response:", res);
+    dispatch(
+      setUser({
+        user: res.data.user,
+        token: res.data.accessToken,
+      })
+    );
+    router.push(redirectUrl);
+  };
+
+  const onSubmit = async (data: LoginFormValues) => {
+    const payload = { email: data.email, password: data.password };
+    await handleMutation(payload, login, "Logging in...", onSuccess);
   };
 
   return (
@@ -50,6 +73,13 @@ const LoginForm = () => {
         {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Display General Error */}
+            {form.formState.errors.root && (
+              <p className="text-destructive text-sm text-center">
+                {form.formState.errors.root.message}
+              </p>
+            )}
+
             {/* Email Field */}
             <FormField
               control={form.control}
@@ -127,10 +157,11 @@ const LoginForm = () => {
 
             {/* Submit Button */}
             <Button
+              disabled={isLoading}
               type="submit"
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-lg font-medium"
             >
-              Sign In
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </Form>

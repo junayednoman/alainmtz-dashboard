@@ -5,7 +5,7 @@ const ManageRegistration = () => {
   return (
     <main>
       <AContainer>
-        <UserTable limit={10} pagination />
+        <UserTable limit={11} pagination />
       </AContainer>
     </main>
   );
