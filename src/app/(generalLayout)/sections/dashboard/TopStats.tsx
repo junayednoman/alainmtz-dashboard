@@ -1,102 +1,54 @@
 "use client";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { months } from "@/data/others.data";
-import { useState } from "react";
+import AError from "@/components/AError";
+import { useGetMetaQuery } from "@/redux/api/dashboardApi";
+import StatCardSkeleton from "@/skeletons/StatCardSkeleton";
 
 const TopStats = () => {
-  const [salesMonth, setSalesMonth] = useState("january");
-  const [earningMonth, setEarningMonth] = useState("january");
-  const [userMonth, setUserMonth] = useState("january");
-
-  const handleSalesMonthChange = (value: string) => {
-    setSalesMonth(value);
-    console.log("Selected month:", value);
-  };
-
-  const handleEarningMonthChange = (value: string) => {
-    setEarningMonth(value);
-    console.log("Selected month:", value);
-  };
-
-  const handleUserMonthChange = (value: string) => {
-    setUserMonth(value);
-    console.log("Selected month:", value);
-  };
+  const { data, isLoading, isError, error, refetch } = useGetMetaQuery("");
+  const meta = data?.data;
 
   return (
     <section>
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-card text-card-foreground p-6 px-8 rounded-xl">
-          <div className="flex justify-between gap-3 mb-10">
-            <h5 className="font-bold text-xl">Total Salespersons</h5>
-            <Select value={salesMonth} onValueChange={handleSalesMonthChange}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Select a month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {months.map((month) => (
-                    <SelectItem key={month.name} value={month.value}>
-                      {month.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <span className="text-4xl font-bold tabular-nums">24</span>
+      {isLoading ? (
+        <div className="grid grid-cols-3 gap-6">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
         </div>
-        <div className="bg-card text-card-foreground p-6 px-8 rounded-xl">
-          <div className="flex justify-between gap-3 mb-10">
-            <h5 className="font-bold text-xl">Total Earning</h5>
-            <Select
-              value={earningMonth}
-              onValueChange={handleEarningMonthChange}
-            >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Select a month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {months.map((month) => (
-                    <SelectItem key={month.name} value={month.value}>
-                      {month.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+      ) : isError ? (
+        <AError
+          className="!bg-card"
+          message={(error as any)?.data?.message}
+          onRetry={refetch}
+        />
+      ) : (
+        <div className="grid grid-cols-3 gap-6">
+          <div className="bg-card text-card-foreground p-6 px-8 rounded-xl">
+            <div className="flex justify-between gap-3 mb-10">
+              <h5 className="font-bold text-xl">Total Salespersons</h5>
+            </div>
+            <span className="text-4xl font-bold tabular-nums">
+              {meta?.totalSalesPersons || 0}
+            </span>
           </div>
-          <span className="text-4xl font-bold tabular-nums">$453</span>
-        </div>
-        <div className="bg-card text-card-foreground p-6 px-8 rounded-xl">
-          <div className="flex justify-between gap-3 mb-10">
-            <h5 className="font-bold text-xl">Total Users</h5>
-            <Select value={userMonth} onValueChange={handleUserMonthChange}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Select a month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {months.map((month) => (
-                    <SelectItem key={month.name} value={month.value}>
-                      {month.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="bg-card text-card-foreground p-6 px-8 rounded-xl">
+            <div className="flex justify-between gap-3 mb-10">
+              <h5 className="font-bold text-xl">New Registers</h5>
+            </div>
+            <span className="text-4xl font-bold tabular-nums">
+              {meta?.newRegisterCount || 0}
+            </span>
           </div>
-          <span className="text-4xl font-bold tabular-nums">94</span>
+          <div className="bg-card text-card-foreground p-6 px-8 rounded-xl">
+            <div className="flex justify-between gap-3 mb-10">
+              <h5 className="font-bold text-xl">Total Users</h5>
+            </div>
+            <span className="text-4xl font-bold tabular-nums">
+              {meta?.totalUserCount || 0}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };

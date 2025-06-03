@@ -8,12 +8,14 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["auth"]
     }),
     logout: builder.mutation({
       query: () => ({
         url: "/auth/logout",
         method: "PATCH"
       }),
+      invalidatesTags: ["auth"]
     }),
   }),
 })

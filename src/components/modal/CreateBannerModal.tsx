@@ -17,21 +17,26 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { bannerSchema, TBannerFormData } from "@/validations/banner.validation";
 import { cn } from "@/lib/utils";
+import { useAddBannerMutation } from "@/redux/api/bannerApi";
+import handleMutation from "@/utils/handleMutation";
 
 export function CreateBannerModal({ children }: { children: React.ReactNode }) {
-  // Initialize the form with React Hook Form and Zod resolver
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<TBannerFormData>({
     resolver: zodResolver(bannerSchema),
   });
 
+  const [createBanner, { isLoading }] = useAddBannerMutation();
+
   // Handle form submission
-  const onSubmit = (data: TBannerFormData) => {
-    console.log("New Banner Data:", data);
-    // Add logic to submit the banner data (e.g., API call)
+  const onSubmit = async (data: TBannerFormData) => {
+    await handleMutation(data, createBanner, "Creating banner...", () =>
+      reset()
+    );
   };
 
   return (
@@ -65,10 +70,10 @@ export function CreateBannerModal({ children }: { children: React.ReactNode }) {
               placeholder="Enter banner description"
               rows={12}
               className={cn(
-                "min-h-28", // Override any min-height to allow rows to take effect
+                "min-h-28",
                 errors.description ? "border-destructive" : ""
               )}
-              style={{ height: "auto" }} // Ensure CSS doesn't override rows
+              style={{ height: "auto" }}
             />
             {errors.description && (
               <p className="text-destructive text-sm">
@@ -83,7 +88,9 @@ export function CreateBannerModal({ children }: { children: React.ReactNode }) {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Creating..." : "Create"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
