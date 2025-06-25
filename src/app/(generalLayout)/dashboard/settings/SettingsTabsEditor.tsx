@@ -51,6 +51,7 @@ const SettingsTabsEditor = () => {
   const currentSection = contentSections.find(
     (section) => section.id === activeTab
   );
+  console.log("currentSection", currentSection);
   const handleSave = async (sectionId: string) => {
     setSavingStates((prev) => ({ ...prev, [sectionId]: true }));
 
@@ -77,7 +78,7 @@ const SettingsTabsEditor = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col">
-      <div className="flex-1 p-6">
+      <div className="flex-1">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}

@@ -20,8 +20,8 @@ const NotificationCard = ({
   onDelete,
 }: NotificationCardProps) => {
   return (
-    <div className="p-4 bg-card rounded-xl w-fit">
-      <div className="flex items-center gap-8">
+    <div className="p-4 bg-card rounded-xl w-[50%]">
+      <div className="flex items-center justify-between gap-8">
         <div>
           <h6 className="font-bold text-lg text-primary-foreground">{title}</h6>
           <p className="text-primary-foreground font-medium m-1 -ml-[1px]">

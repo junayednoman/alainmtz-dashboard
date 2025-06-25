@@ -5,7 +5,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import logo from "@/assets/icon.png";
@@ -15,8 +14,6 @@ import { navMain } from "@/data/nav.data";
 import { Separator } from "../ui/separator";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { state } = useSidebar();
-  console.log("state", state);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

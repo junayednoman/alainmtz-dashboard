@@ -5,7 +5,7 @@ const Leaderboard = () => {
   return (
     <main>
       <AContainer>
-        <LeaderboardTable pagination />
+        <LeaderboardTable limit={11} pagination />
       </AContainer>
     </main>
   );

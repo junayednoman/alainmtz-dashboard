@@ -1,0 +1,1 @@
+export const defaultImg = "https://i.postimg.cc/Twfc6FzM/panda.png";

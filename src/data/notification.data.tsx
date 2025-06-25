@@ -24,7 +24,7 @@ export const notifications = [
     id: 4,
     title: "Account Update Required",
     message:
-      "Please update your business information to continue using the dashboard seamlessly.",
+      "Please update your business information to continue using the dashboard seamlessly. The dashboard seamlessly",
     timestamp: "2 hour ago",
   },
 ];
