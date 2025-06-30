@@ -2,14 +2,20 @@
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Settings2, Check, X, Eye } from "lucide-react";
-import Image from "next/image";
-import panda from "@/assets/panda.png";
-import { registrations } from "@/data/registrations.data";
-import { useState, useEffect } from "react";
+import { Search, Settings2, Check, X, Loader } from "lucide-react";
+import { useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { APagination } from "@/components/ui/APagination";
 import { AAlertDialog } from "@/components/modal/AAlertDialog";
+import {
+  useChangeUseStatusMutation,
+  useGetUsersQuery,
+} from "@/redux/api/userApi";
+import AError from "@/components/AError";
+import UserTableSkeleton from "@/skeletons/UserItemSkeleton";
+import { defaultImg } from "@/data/global.data";
+import handleMutation from "@/utils/handleMutation";
+import ATooltip from "@/components/ui/ATooltip";
 
 const UserTable = ({
   pagination = false,
@@ -21,37 +27,50 @@ const UserTable = ({
   const [searchText, setSearchText] = useState<string>("");
   const debouncedSearchText = useDebounce(searchText, 500);
   const [currentPage, setCurrentPage] = useState(1);
+  const params = { page: currentPage, limit: limit };
+  const { data, isLoading, isError, error, refetch } = useGetUsersQuery(params);
+  const users = data?.data || [];
 
-  // Filter registrations based on debounced search text
-  const filteredRegistrations = registrations.filter(
-    (registration) =>
-      registration.name
-        .toLowerCase()
-        .includes(debouncedSearchText.toLowerCase()) ||
-      registration.email
-        .toLowerCase()
-        .includes(debouncedSearchText.toLowerCase())
+  const meta = data?.meta;
+
+  // Filter users based on debounced search text
+  const filteredUsers = users.filter(
+    (user: any) =>
+      user.name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
+      user.email.toLowerCase().includes(debouncedSearchText.toLowerCase())
   );
 
   // Calculate paginated registrations based on limit
-  const totalItems = filteredRegistrations.length;
+  const totalItems = 4;
   const startIndex = (currentPage - 1) * limit;
-  const paginatedRegistrations = filteredRegistrations.slice(
-    startIndex,
-    startIndex + limit
-  );
+  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + limit);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1);
   };
 
-  useEffect(() => {
-    console.log("Debounced search text:", debouncedSearchText);
-  }, [debouncedSearchText]);
+  // State to track loading status for each user
+  const [userLoadingStates, setUserLoadingStates] = useState<{
+    [key: string | number]: boolean;
+  }>({});
 
-  const handleBlockUser = (id: string | number) => {
-    console.log("Block User:", id);
+  // Handle change user status
+  const [updateStatus, { isLoading: isStatusUpdating }] =
+    useChangeUseStatusMutation();
+
+  const handleChangeUserStatus = async (
+    id: string | number,
+    status: "active" | "blocked"
+  ) => {
+    // Set loading state for the specific user
+    setUserLoadingStates((prev) => ({ ...prev, [id]: true }));
+    const data = {
+      userId: id,
+      status: status === "active" ? "blocked" : "active",
+    };
+
+    await handleMutation(data, updateStatus, "Updating user status...");
   };
 
   return (
@@ -83,114 +102,169 @@ const UserTable = ({
 
       {/* Table */}
       <div className="rounded-lg overflow-hidden">
-        {/* Header Row */}
-        <div className="bg-primary text-primary-foreground px-4 py-3">
-          <div className="grid grid-cols-12 gap-2 items-center">
-            <div className="col-span-2 font-semibold">User ID</div>
-            <div className="col-span-3 font-semibold">Name</div>
-            <div className="col-span-3 font-semibold">Email</div>
-            <div className="col-span-2 font-semibold">Registration Date</div>
-            <div className="col-span-2 font-semibold text-right">Action</div>
-          </div>
-        </div>
-
         {/* Data Rows */}
-        <div className="divide-y divide-border">
-          {paginatedRegistrations.length > 0 ? (
-            paginatedRegistrations.map((registration) => (
-              <div
-                key={registration.id}
-                className="px-4 py-3 hover:bg-card/50 transition-colors"
-              >
-                <div className="grid grid-cols-12 gap-2 items-center">
-                  {/* User ID Column */}
-                  <div className="col-span-2">
-                    <span className="text-primary-foreground">
-                      {registration.id || "N/A"}
-                    </span>
-                  </div>
-
-                  {/* Name Column */}
-                  <div className="col-span-3 flex items-center gap-2">
-                    <Image
-                      src={panda || "/placeholder.svg"}
-                      alt={registration.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                    <span className="font-medium text-primary-foreground truncate">
-                      {registration.name}
-                    </span>
-                  </div>
-
-                  {/* Email Column */}
-                  <div className="col-span-3">
-                    <span className="text-primary-foreground truncate">
-                      {registration.email}
-                    </span>
-                  </div>
-
-                  {/* Date Column */}
-                  <div className="col-span-2">
-                    <span className="text-primary-foreground">
-                      {new Date(
-                        registration.registrationDate
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-
-                  {/* Action Column */}
-                  <div className="col-span-2 flex items-center justify-end gap-2">
-                    <Button
-                      size="icon"
-                      className="h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white"
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <AAlertDialog
-                      onAction={() => handleBlockUser(registration.id)}
-                    >
-                      <Button
-                        size="icon"
-                        className="h-8 w-8 rounded-full bg-red-500 hover:bg-red-600 text-white"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </AAlertDialog>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      className="h-8 w-8 rounded-full border-border hover:bg-card"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
+        {isLoading ? (
+          <UserTableSkeleton limit={limit} />
+        ) : isError ? (
+          <AError
+            message={(error as any)?.data?.message}
+            onRetry={refetch}
+            className="py-60 !bg-card"
+          />
+        ) : (
+          <>
+            {/* Header Row */}
+            <div className="bg-primary text-primary-foreground px-4 py-3">
+              <div className="grid grid-cols-12 gap-2 items-center">
+                <div className="col-span-2 font-semibold">User ID</div>
+                <div className="col-span-3 font-semibold">Name</div>
+                <div className="col-span-3 font-semibold">Email</div>
+                <div className="col-span-2 font-semibold">
+                  Registration Date
+                </div>
+                <div className="col-span-2 font-semibold text-right">
+                  Action
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="px-4 py-3 text-center text-primary-foreground">
-              No registrations found.
             </div>
-          )}
-        </div>
+            <div className="divide-y divide-border">
+              {paginatedUsers.length > 0 ? (
+                paginatedUsers.map((registration: any) => (
+                  <div
+                    key={registration.id}
+                    className="px-4 py-3 hover:bg-card/50 transition-colors"
+                  >
+                    <div className="grid grid-cols-12 gap-2 items-center">
+                      {/* User ID Column */}
+                      <div className="col-span-2">
+                        <span className="text-primary-foreground">
+                          {registration.id || "N/A"}
+                        </span>
+                      </div>
 
-        {/* Pagination */}
-        {pagination && totalItems > limit && (
-          <div className="p-4 flex">
-            <APagination
-              totalItems={totalItems}
-              itemsPerPage={limit}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              maxVisiblePages={5}
-            />
-          </div>
+                      {/* Name Column */}
+                      <div className="col-span-3 flex items-center gap-2">
+                        <div
+                          className="bg-cover bg-center bg-no-repeat w-8 h-8 rounded-full"
+                          style={{
+                            backgroundImage: `url(${
+                              registration.photoUrl || defaultImg
+                            })`,
+                          }}
+                        ></div>
+                        <span className="font-medium text-primary-foreground truncate">
+                          {registration.name}
+                        </span>
+                      </div>
+
+                      {/* Email Column */}
+                      <div className="col-span-3">
+                        <span className="text-primary-foreground truncate">
+                          {registration.email}
+                        </span>
+                      </div>
+
+                      {/* Date Column */}
+                      <div className="col-span-2">
+                        <span className="text-primary-foreground">
+                          {new Date(registration.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>
+                      </div>
+
+                      {/* Action Column */}
+                      <div className="col-span-2 flex items-center justify-end gap-2">
+                        {registration.status === "blocked" && (
+                          <ATooltip text="Unblock User">
+                            <Button
+                              disabled={
+                                (userLoadingStates[registration._id] &&
+                                  isStatusUpdating) ||
+                                false
+                              }
+                              onClick={() =>
+                                handleChangeUserStatus(
+                                  registration._id,
+                                  registration.status
+                                )
+                              }
+                              size="icon"
+                              className="h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                              {userLoadingStates[registration._id] &&
+                              isStatusUpdating ? (
+                                <Loader className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Check className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </ATooltip>
+                        )}
+                        {registration.status === "active" && (
+                          <ATooltip text="Block User">
+                            <AAlertDialog
+                              onAction={() =>
+                                handleChangeUserStatus(
+                                  registration._id,
+                                  registration.status
+                                )
+                              }
+                            >
+                              <Button
+                                disabled={
+                                  (userLoadingStates[registration._id] &&
+                                    isStatusUpdating) ||
+                                  false
+                                }
+                                size="icon"
+                                className="h-8 w-8 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                              >
+                                {userLoadingStates[registration._id] &&
+                                isStatusUpdating ? (
+                                  <Loader className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <X className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </AAlertDialog>
+                          </ATooltip>
+                        )}
+                        {/* <Button
+                          size="icon"
+                          variant="outline"
+                          className="h-8 w-8 rounded-full border-border hover:bg-card"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button> */}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-44 text-center text-primary-foreground">
+                  No registrations found.
+                </div>
+              )}
+            </div>
+
+            {pagination && totalItems > limit && (
+              <div className="p-4 flex">
+                <APagination
+                  totalItems={totalItems}
+                  itemsPerPage={limit}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  maxVisiblePages={5}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

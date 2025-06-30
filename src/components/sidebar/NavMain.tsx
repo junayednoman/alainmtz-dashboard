@@ -52,7 +52,7 @@ export function NavMain({
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               asChild // Render the Link as the button content
-              tooltip="Quick Create"
+              tooltip="Dashboard"
               className={`text-[15px] py-6 px-4 cursor-pointer min-w-8 duration-200 ease-linear ${
                 isActive("/dashboard")
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"

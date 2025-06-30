@@ -31,6 +31,7 @@ export function APagination({
 }: PaginationProps) {
   // Calculate totalPages based on totalItems and itemsPerPage
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+  console.log('totalPages', totalPages);
 
   // Sync currentPage with initialPage if it changes (e.g., from parent props)
   useEffect(() => {

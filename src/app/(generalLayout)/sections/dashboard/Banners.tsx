@@ -77,7 +77,7 @@ const Banners = () => {
               disabled={isDeleting}
               className="p-2 rounded-md bg-destructive"
             >
-              <Trash2 size={18} />
+              <Trash2 size={17} />
             </button>
           </AAlertDialog>
         </div>
